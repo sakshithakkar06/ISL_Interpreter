@@ -13,7 +13,6 @@ from sklearn.metrics import (
 DATA_FILE = Path("data/processed/landmarks_full.csv")
 MODEL_FILE = Path("models/isl_alphabet_rf.joblib")
 
-TARGET_LETTERS = ["R", "S", "T", "Z"]
 
 df = pd.read_csv(DATA_FILE)
 
@@ -42,16 +41,7 @@ X_val, y_val = validation[feature_cols], validation["label"]
 X_test, y_test = test[feature_cols], test["label"]
 
 classes = sorted(df["label"].unique())
-target_letters = [letter for letter in TARGET_LETTERS if letter in classes]
 
-print("Training samples:", len(train))
-print("Validation samples:", len(validation))
-print("Testing samples:", len(test))
-print("Features:", len(feature_cols))
-print("Classes:", classes)
-
-print("\nTraining samples per target letter:")
-print(train[train["label"].isin(target_letters)]["label"].value_counts())
 
 # Compare configurations using validation data only.
 configs = [
@@ -83,19 +73,12 @@ for config in configs:
         labels=classes, average="macro", zero_division=0
     )
 
-    target_f1 = f1_score(
-        y_val, val_predictions,
-        labels=target_letters, average="macro", zero_division=0
-    )
-
-    # Balance overall alphabet performance with target-letter performance.
-    score = 0.7 * overall_f1 + 0.3 * target_f1
+    score = overall_f1
 
     print(
         f"{config} | "
         f"Accuracy: {accuracy_score(y_val, val_predictions):.2%} | "
-        f"Overall macro-F1: {overall_f1:.3f} | "
-        f"R/S/T/Z macro-F1: {target_f1:.3f}"
+        f"Overall macro-F1: {overall_f1:.3f}"
     )
 
     if score > best_score:
@@ -118,21 +101,11 @@ print(classification_report(
     zero_division=0
 ))
 
-print("\nTarget-letter confusion matrix rows:")
+print("\nConfusion matrix:")
 cm = confusion_matrix(y_test, test_predictions, labels=classes)
 cm_df = pd.DataFrame(cm, index=classes, columns=classes)
+print(cm_df)
 
-for letter in target_letters:
-    print(f"\nActual {letter} — predictions across all letters:")
-    print(cm_df.loc[letter][cm_df.loc[letter] > 0].sort_values(ascending=False))
-
-print("\nTarget-letter classification report:")
-print(classification_report(
-    y_test,
-    test_predictions,
-    labels=target_letters,
-    zero_division=0
-))
 
 MODEL_FILE.parent.mkdir(parents=True, exist_ok=True)
 
