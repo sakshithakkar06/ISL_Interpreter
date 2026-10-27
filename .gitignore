@@ -1,0 +1,50 @@
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Dataset and ZIP files
+dataset/
+datasets/
+data/
+*.zip
+
+# Training outputs and temporary files
+runs/
+logs/
+outputs/
+*.log
+*.tmp
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+check_dataset_hands.py
+# Screenshots and images
+screenshots/
+ss/
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
